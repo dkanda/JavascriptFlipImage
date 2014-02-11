@@ -1,0 +1,53 @@
+<canvas id="myCanvas" width="578" height="400"></canvas>
+<script type="text/javascript">
+ 
+//array is of the form [r1,g1,b1,a1,r2,g2,b2,a2,r3,g3,b3,a3....]
+//represeting the red, green, blue, and alpha channel components of each pixel
+//therefore the length of the array is height x width x 4
+//make the pixel array global
+var data
+
+//function to swap pixel data index1 and index2 and the following
+//4 places (since information for 1 pixel is carried in 4 slots)
+function copyPixels(index1, index2)
+{
+  for(var i = 0; i<4; i++)
+  {
+    temp = data[index2 + i];
+    data[index2 + i]  = data[index1 + i];
+    data[index1 + i] = temp;
+  }
+}
+
+//function to place source image on canvas and flip
+function drawImage(imageObj) {
+  var canvas = document.getElementById('myCanvas');
+  var context = canvas.getContext('2d');
+  var x = 0;
+  var y = 0;
+
+  context.drawImage(imageObj, x, y);
+
+  var imageData = context.getImageData(x, y, imageObj.width, imageObj.height);
+      data = imageData.data;
+  var outdata = imageData.data;
+  var derwidth = imageObj.width;
+
+  for(i = 0; i < imageObj.height; i++)
+  {
+    for(j=0; j<(imageObj.width*2); j +=4)
+    {
+      copyPixels((i*imageObj.width*4)+j, (((i+1)*(imageObj.width*4))-4)-j)
+    }
+  }
+  // overwrite original image
+  context.putImageData(imageData, x, y);
+}
+
+var imageObj = new Image();
+imageObj.onload = function() {
+  drawImage(this);
+};
+//image source, make sure you use http or it will complain
+imageObj.src = 'http://localhost/JavascriptFlipImage/darth-vader.jpg';
+</script>
